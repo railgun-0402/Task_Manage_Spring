@@ -10,24 +10,30 @@
 <body>
 <section layout:fragment="content">
     <div>
-        <form th:action="@{/tasks}" method="post">
-            <div>
-                <label for="summaryInput">概要</label>
-                <input type="text" id="summaryInput" name="summary">
+        <form th:action="@{/tasks}" method="post" th:object="${taskForm}">
+            <div class="form-group mt-3">
+                <label for="summaryInput" class="form-label">概要</label>
+                <input type="text" id="summaryInput" th:field="*{summary}" class="form-control" th:errorclass="is-invalid">
+                <span th:errors="*{summary}" class="invalid-feedback"></span>
             </div>
-            <div>
-                <label for="descriptionInput">詳細</label>
-                <textarea id="descriptionInput" name="description"></textarea>
+            <div class="form-group mt-3">
+                <label for="descriptionInput" class="form-label">詳細</label>
+                <textarea id="descriptionInput" th:field="*{description}" class="form-control" rows="5" th:errorclass="is-invalid"></textarea>
+                <span th:errors="*{description}" class="invalid-feedback"></span>
             </div>
-            <div>
-                <label for="statusInput">ステータス</label>
-                <select id="statusInput" name="status">
+            <div class="form-group mt-3">
+                <label for="statusInput" class="form-label">ステータス</label>
+                <select id="statusInput" th:field="*{status}" class="form-control" th:errorclass="is-invalid">
                     <option value="TODO">Todo</option>
                     <option value="DOING">Doing</option>
                     <option value="DONE">Done</option>
                 </select>
+                <span th:errors="*{status}" class="invalid-feedback"></span>
             </div>
-            <button type="submit">作成</button>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">作成</button>
+                <a th:href="@{/tasks}" class="btn btn-secondary">戻る</a>
+            </div>
         </form>
     </div>
 </section>

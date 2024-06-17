@@ -6,10 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,15 +33,15 @@ public class TaskController {
     }
 
     @GetMapping("/creationForm")
-    public String showCreationForm() {
+    public String showCreationForm(@ModelAttribute TaskForm taskForm) {
         return "tasks/form";
     }
 
     @PostMapping
     public String create(@Validated TaskForm form, BindingResult bindingResult) {
-        // バリデーションエラーが起きた場合はフォーム画面に戻る
+        // バリデーションエラーが起きた場合はフォーム画面に戻り、値を入力したままにする
         if (bindingResult.hasErrors()) {
-            return "/tasks/form";
+            return showCreationForm(form);
         }
         taskService.create(form.toEntity());
         return "redirect:/tasks";
