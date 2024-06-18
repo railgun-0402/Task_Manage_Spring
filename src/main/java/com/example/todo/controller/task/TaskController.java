@@ -26,24 +26,53 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public String showDetail(@PathVariable("id") long taskId, Model model) {
-        var taskEntity = taskService.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found: id =" + taskId)); // nullなら例外を投げる
-        model.addAttribute("task", TaskDTO.toDTO(taskEntity));
+        var taskDTO = taskService.findById(taskId)
+                .map(TaskDTO::toDTO)
+                .orElseThrow(TaskNotFoundException::new); // nullなら例外を投げる
+        model.addAttribute("task", taskDTO);
         return "tasks/detail";
     }
 
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute TaskForm taskForm) {
+    public String showCreationForm(@ModelAttribute TaskForm taskForm, Model model) {
+        model.addAttribute("mode", "CREATE");
         return "tasks/form";
     }
 
     @PostMapping
-    public String create(@Validated TaskForm form, BindingResult bindingResult) {
+    public String create(@Validated TaskForm form, BindingResult bindingResult, Model model) {
         // バリデーションエラーが起きた場合はフォーム画面に戻り、値を入力したままにする
         if (bindingResult.hasErrors()) {
-            return showCreationForm(form);
+            return showCreationForm(form, model);
         }
         taskService.create(form.toEntity());
         return "redirect:/tasks";
+    }
+
+    @GetMapping("{id}/editForm")
+    public String showEditForm(@PathVariable("id") long id, Model model) {
+        // DBの内容を取得
+        var form = taskService.findById(id)
+                .map(TaskForm::fromEntity) // Formに変換(存在しない場合はスキップされる)
+                .orElseThrow(TaskNotFoundException::new);
+        model.addAttribute("taskForm", form);
+        model.addAttribute("mode", "EDIT");
+
+        return "tasks/form";
+    }
+
+    @PutMapping("{id}")
+    public String update(@PathVariable("id") long id,
+                         @Validated @ModelAttribute TaskForm form,
+                         BindingResult bindingResult,
+                         Model model) {
+        // バリデーションエラーが起きた場合はフォーム画面に戻り、値を入力したままにする
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "EDIT");
+            return "tasks/form";
+        }
+        var entity = form.toEntity(id);
+        taskService.update(entity);
+        return "redirect:/tasks/{id}";
     }
 }

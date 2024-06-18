@@ -25,4 +25,9 @@ public class TaskService {
         // DBに新規タスクを登録
         taskRepository.insert(newEntity);
     }
+
+    @Transactional
+    public void update(TaskEntity entity) {
+        taskRepository.update(entity);
+    }
 }

@@ -5,12 +5,16 @@
       layout:decorate="~{layout/layout}"
 >
 <head>
-    <title>タスク作成</title>
+    <title th:text="${mode == 'CREATE'} ? 'タスク作成' : 'タスク編集'"></title>
 </head>
 <body>
 <section layout:fragment="content">
     <div>
-        <form th:action="@{/tasks}" method="post" th:object="${taskForm}">
+        <form
+            th:action="${mode == 'CREATE'} ? @{/tasks} : @{/tasks/{id}(id=${id})}"
+            th:method="${mode == 'CREATE'} ? post : put"
+            th:object="${taskForm}"
+        >
             <div class="form-group mt-3">
                 <label for="summaryInput" class="form-label">概要</label>
                 <input type="text" id="summaryInput" th:field="*{summary}" class="form-control" th:errorclass="is-invalid">
@@ -31,8 +35,8 @@
                 <span th:errors="*{status}" class="invalid-feedback"></span>
             </div>
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary">作成</button>
-                <a th:href="@{/tasks}" class="btn btn-secondary">戻る</a>
+                <button th:text="${mode == 'CREATE'} ? '作成': '編集'" type="submit" class="btn btn-primary"></button>
+                <a th:href="${mode == 'CREATE'} ? @{/tasks} : @{/tasks/{id}(id=${id})}" class="btn btn-secondary">戻る</a>
             </div>
         </form>
     </div>
