@@ -30,4 +30,9 @@ public class TaskService {
     public void update(TaskEntity entity) {
         taskRepository.update(entity);
     }
+
+    @Transactional
+    public void delete(long id) {
+        taskRepository.delete(id);
+    }
 }
