@@ -12,8 +12,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    public List<TaskEntity> find() {
-        return  taskRepository.select();
+    public List<TaskEntity> find(TaskSearchEntity taskSearchEntity) {
+        return taskRepository.select(taskSearchEntity);
     }
 
     public Optional<TaskEntity> findById(long taskId) {

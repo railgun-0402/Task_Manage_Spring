@@ -15,12 +15,14 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @GetMapping("")
-    public String list(Model model) {
-        var taskList = taskService.find() // List<TaskEntity> -> List<TaskDTO>
+    @GetMapping
+    public String list(TaskSearchForm taskSearchForm, Model model) {
+
+        var taskList = taskService.find(taskSearchForm.toEntity()) // List<TaskEntity> -> List<TaskDTO>
         .stream().map(TaskDTO::toDTO
                 ).toList();
         model.addAttribute("taskList", taskList);
+        model.addAttribute("searchDTO", taskSearchForm.toDTO());
         return "tasks/list";
     }
 
